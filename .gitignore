@@ -21,3 +21,6 @@ fiddle-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Environmental variables
+/config/.env.exs
