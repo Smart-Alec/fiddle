@@ -1,16 +1,11 @@
 defmodule Fiddle.YouTube do
   def test() do
     fetch_playlist("https://music.youtube.com/playlist?list=RDCLAK5uy_nxuz8sV0R7aWiLsbDv5W9_Bvp0X9PxFjY")
-    |> IO.inspect
   end
 
   # Cache operations
 
   def cache_playlist(playlist) do
-    if :ets.whereis(:yt_cache) == :undefined do
-      :ets.new(:yt_cache, [:set, :public, :named_table])
-    end
-
     :ets.insert(:yt_cache, {"playlist", playlist})
 
     {:ok, playlist}
@@ -37,13 +32,13 @@ defmodule Fiddle.YouTube do
 
     cache_playlist(playlist)
 
-    playlist
+    {:ok, playlist}
   end
 
   def get_nearest_titles(playlist, match_string) do
     playlist
     |> Enum.map(&(&1.title))
-    |> Enum.map(&String.downcase)
+    |> Enum.map(&(String.downcase(&1)))
     |> Enum.map(fn title ->
       %{title: title, distance: String.jaro_distance(title, match_string)}
     end)

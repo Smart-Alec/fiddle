@@ -2,6 +2,7 @@ defmodule Fiddle.Consumer do
   @behaviour Nostrum.Consumer
 
   # Add commands
+
   def handle_event({:READY, %{guilds: guilds} = _event, _ws_state}) do
     guilds
     |> Enum.map(fn guild -> guild.id end)
@@ -35,45 +36,16 @@ defmodule Fiddle.Consumer do
   def handle_event({:INTERACTION_CREATE, %{data: %{name: "start"}} = interaction, _ws_state}) do
     [%{name: "url", value: _url}] = interaction.data.options
     Nostrum.Api.Interaction.create_response(interaction, %{type: 5}) # Tell discord that we are waiting to process data
-    :timer.sleep(1000)
-    Nostrum.Api.Interaction.edit_response(interaction, %{
-      flags: 32768,
-      components: [
-        %{
-          type: 1,
-          components: [
-            %{
-              type: 2,
-              custom_id: "click_me",
-              label: "Click me!",
-              style: 1
-            }
-          ]
-        }
-      ]
-    })
+    Fiddle.YouTube.test # come back and replace this
+    Fiddle.Interface.render_controls(interaction)
   end
 
-  # Button updoot
+  # Play/Pause
 
-  def handle_event({:INTERACTION_CREATE, %{data: %{custom_id: "click_me"}} = interaction, _ws_state}) do
+  def handle_event({:INTERACTION_CREATE, %{data: %{custom_id: "pause"}} = interaction, _ws_state}) do
     Nostrum.Api.Interaction.create_response(interaction, %{type: 6, data: %{flags: 32768}})
-    Nostrum.Api.Interaction.edit_response(interaction, %{
-      flags: 32768,
-      components: [
-        %{
-          type: 1,
-          components: [
-            %{
-              type: 2,
-              custom_id: "click_me",
-              label: "Faaah",
-              style: 1
-            }
-          ]
-        }
-      ]
-    })
+    Fiddle.Interface.pause()
+    Fiddle.Interface.render_controls(interaction)
   end
 
   # Autocomplete for /guess
@@ -91,5 +63,6 @@ defmodule Fiddle.Consumer do
   end
 
   # Ignore any other events
+
   def handle_event(_), do: :ok
 end

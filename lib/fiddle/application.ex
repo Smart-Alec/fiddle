@@ -3,6 +3,8 @@ defmodule Fiddle.Application do
 
   @impl true
   def start(_type, _args) do
+    :ets.new(:yt_cache, [:set, :public, :named_table])
+
     bot_options = %{
       name: Fiddle,
       consumer: Fiddle.Consumer,
