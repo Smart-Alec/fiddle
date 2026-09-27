@@ -1,11 +1,11 @@
-defmodule MyBot.Application do
+defmodule Fiddle.Application do
   use Application
 
   @impl true
   def start(_type, _args) do
     bot_options = %{
-      name: MyBot,
-      consumer: MyBot.Consumer,
+      name: Fiddle,
+      consumer: Fiddle.Consumer,
       intents: [:direct_messages, :guild_messages, :message_content],
       wrapped_token: fn -> System.fetch_env!("BOT_TOKEN") end
     }

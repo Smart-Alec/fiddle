@@ -20,7 +20,7 @@ defmodule Fiddle.MixProject do
 
   defp deps do
     [
-      {:nostrum, "~> 0.10"}
+      {:nostrum, github: "Kraigie/nostrum"}
     ]
   end
 end
