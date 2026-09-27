@@ -34,9 +34,17 @@ defmodule Fiddle.Consumer do
   # Start game
 
   def handle_event({:INTERACTION_CREATE, %{data: %{name: "start"}} = interaction, _ws_state}) do
-    [%{name: "url", value: _url}] = interaction.data.options
+    [%{name: "url", value: url}] = interaction.data.options
     Nostrum.Api.Interaction.create_response(interaction, %{type: 5}) # Tell discord that we are waiting to process data
-    Fiddle.YouTube.test # come back and replace this
+    Fiddle.YouTube.fetch_playlist(url)
+    Fiddle.Interface.render_controls(interaction)
+  end
+
+  # Rewind
+
+  def handle_event({:INTERACTION_CREATE, %{data: %{custom_id: "rewind"}} = interaction, _ws_state}) do
+    Nostrum.Api.Interaction.create_response(interaction, %{type: 6, data: %{flags: 32768}})
+    Fiddle.Interface.rewind()
     Fiddle.Interface.render_controls(interaction)
   end
 
@@ -44,7 +52,7 @@ defmodule Fiddle.Consumer do
 
   def handle_event({:INTERACTION_CREATE, %{data: %{custom_id: "pause"}} = interaction, _ws_state}) do
     Nostrum.Api.Interaction.create_response(interaction, %{type: 6, data: %{flags: 32768}})
-    Fiddle.Interface.pause()
+    Fiddle.Interface.toggle_pause()
     Fiddle.Interface.render_controls(interaction)
   end
 
